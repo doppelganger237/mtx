@@ -2,33 +2,34 @@
 
 
 // require settings and options
-define( 'OPTIONS_FRAMEWORK_DIRECTORY', get_template_directory_uri() . '/settings/' );
+define('OPTIONS_FRAMEWORK_DIRECTORY', get_template_directory_uri() . '/settings/');
 require_once get_stylesheet_directory() . '/settings/options-framework.php';
 
-$optionsfile = locate_template( 'options.php' );
-load_template( $optionsfile );
+$optionsfile = locate_template('options.php');
+load_template($optionsfile);
 
 //require_once get_stylesheet_directory() . '/options.php';
 //require_once get_stylesheet_directory() . '/settings/update.php';
 
-add_action( 'optionsframework_custom_scripts', 'optionsframework_custom_scripts' );
+add_action('optionsframework_custom_scripts', 'optionsframework_custom_scripts');
 
-function optionsframework_custom_scripts() { ?>
-	<script type="text/javascript">
-	jQuery(document).ready(function() {
+function optionsframework_custom_scripts()
+{ ?>
+    <script type="text/javascript">
+        jQuery(document).ready(function() {
 
-		jQuery('#example_showhidden').click(function() {
-	  		jQuery('#section-example_text_hidden').fadeToggle(400);
-		});
+            jQuery('#example_showhidden').click(function() {
+                jQuery('#section-example_text_hidden').fadeToggle(400);
+            });
 
-		if (jQuery('#example_showhidden:checked').val() !== undefined) {
-			jQuery('#section-example_text_hidden').show();
-		}
+            if (jQuery('#example_showhidden:checked').val() !== undefined) {
+                jQuery('#section-example_text_hidden').show();
+            }
 
-	});
-	</script>
+        });
+    </script>
 
-	<?php
+<?php
 }
 
 
@@ -53,6 +54,17 @@ function my_quicktags()
     }
 };
 add_action('admin_print_scripts', 'my_quicktags');
+
+//去除部分默认小工具
+function unregister_d_widget()
+{
+    unregister_widget('WP_Widget_Search');
+    unregister_widget('WP_Widget_Recent_Comments');
+    unregister_widget('WP_Widget_Tag_Cloud');
+    unregister_widget('WP_Nav_Menu_Widget');
+}
+
+add_action('widgets_init', 'unregister_d_widget');
 
 // 更改后台字体
 function git_admin_style()
@@ -164,7 +176,7 @@ function zfunc_smiley_button($custom = false, $before = '', $after = '')
     <a href="javascript:grin(':neutral:')"><img src="<?php echo $customsmiley_url; ?>/icon_neutral.gif" alt="" /></a>
     <a href="javascript:grin(':cry:')"><img src="<?php echo $customsmiley_url; ?>/icon_cry.gif" alt="" /></a>
     <a href="javascript:grin(':mrgreen:')"><img src="<?php echo $customsmiley_url; ?>/icon_mrgreen.gif" alt="" /></a>
-    <?php
+<?php
     echo $after;
 }
 
@@ -197,4 +209,3 @@ add_action('admin_enqueue_scripts', 'zfunc_admin_enqueue_scripts');
 
 
 ?>
-

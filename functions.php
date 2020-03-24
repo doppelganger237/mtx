@@ -1,42 +1,38 @@
 <?php
-/* error_reporting(E_ALL ^ E_NOTICE);  */
-if (phpversion() < 5.5) {
-    wp_die('本主题不支持在PHP5.5以下版本运行，请升级PHP版本 ^_^');
-}
-/*定义一些常量*/
+error_reporting(E_ALL);
+ini_set("display_errors", 1);
+
+
+/* Define some constant */
 define('MTX_VER', wp_get_theme()->get('Version'));
 define('MTX_URL', get_template_directory_uri());
 
 
-add_action('after_setup_theme', 'deel_setup');
-//require('admin/theme-options.php');
 require('admin/theme-widgets.php');
 require('admin/theme-metabox.php');
 require('include/func_load.php');
 require('admin/theme-ajax.php');
+
+/* 
+
+Prepare to rebuild points system
+
 if (!defined('POINTS_CORE_DIR')) {
     require('modules/points.php');
 }
+ */
 
-// require functions for admin
+/*  Require functions for admin */
 if (is_admin()) {
     require_once get_stylesheet_directory() . '/functions-admin.php';
 }
 
 
-function deel_setup()
+function mtx_setup()
 {
     //添加主题特性
     add_theme_support('post-thumbnails'); //缩略图设置
     add_theme_support('post-formats', array('aside')); //增加文章形式
-    /*     add_theme_support('custom-background', array(
-        'default-image' => MTX_URL . '/assets/imgg.png',
-        'default-repeat' => 'repeat',
-        'default-position-x' => 'left',
-        'default-position-y' => 'top',
-        'default-size' => 'auto',
-        'default-attachment' => 'fixed'
-    )); */
     add_editor_style('editor-style.css');
     //定义菜单
     if (function_exists('register_nav_menus')) {
@@ -46,8 +42,32 @@ function deel_setup()
         ));
     }
 }
+add_action('after_setup_theme', 'mtx_setup');
 
-//自定义ajax提醒
+function mtx_widgets_init()
+{
+    $sidebars = array(
+        'widget_sitesidebar' => '全站侧栏',
+        'widget_sidebar' => '首页侧栏',
+        'widget_othersidebar'    => '分类/标签/搜索页侧栏',
+        'widget_postsidebar'     => '文章页侧栏',
+        'widget_pagesidebar'     => '页面侧栏'
+    );
+    foreach ($sidebars as $key => $value) {
+        register_sidebar(array(
+            'name'          => $value,
+            'id'            => $key,
+            'before_widget' => '<div class="widget %2$s">',
+            'after_widget'  => '</div>',
+            'before_title'  => '<h2>',
+            'after_title'   => '</h2>'
+        ));
+    };
+}
+add_action('widgets_init', 'mtx_widgets_init');
+
+
+//有几把用
 function git_err($ErrMsg)
 {
     header('HTTP/1.1 405 Method Not Allowed');
@@ -55,23 +75,10 @@ function git_err($ErrMsg)
     exit($ErrMsg);
 }
 
-//去除部分默认小工具
-function unregister_d_widget()
-{
-    unregister_widget('WP_Widget_Search');
-    unregister_widget('WP_Widget_Recent_Comments');
-    unregister_widget('WP_Widget_Tag_Cloud');
-    unregister_widget('WP_Nav_Menu_Widget');
-}
-
-add_action('widgets_init', 'unregister_d_widget');
-
 function _mtx($name, $default = false)
 {
     $option_name = 'mtx';
-
     $options = get_option($option_name);
-
     if (isset($options[$name])) {
         return $options[$name];
     }
@@ -80,59 +87,16 @@ function _mtx($name, $default = false)
 }
 
 //显示数据库查询次数、查询时间及内存占用的代码
-function git_performance($visible = false)
+function mtx_performance($visible = false)
 {
     $stat = sprintf('%d 次查询 用时 %.3f 秒, 耗费了 %.2fMB 内存', get_num_queries(), timer_stop(0, 3), memory_get_peak_usage() / 1024 / 1024);
     echo $visible ? $stat : "<!-- {$stat} -->";
 }
+add_action('wp_footer', 'mtx_performance', 20);
 
-add_action('wp_footer', 'git_performance', 20);
-
-if (function_exists('register_sidebar')) {
-    register_sidebar(array(
-        'name' => '全站侧栏',
-        'id' => 'widget_sitesidebar',
-        'before_widget' => '<div class="widget %2$s">',
-        'after_widget' => '</div>',
-        'before_title' => '<h2>',
-        'after_title' => '</h2>'
-    ));
-    register_sidebar(array(
-        'name' => '首页侧栏',
-        'id' => 'widget_sidebar',
-        'before_widget' => '<div class="widget %2$s">',
-        'after_widget' => '</div>',
-        'before_title' => '<h2>',
-        'after_title' => '</h2>'
-    ));
-    register_sidebar(array(
-        'name' => '分类/标签/搜索页侧栏',
-        'id' => 'widget_othersidebar',
-        'before_widget' => '<div class="widget %2$s">',
-        'after_widget' => '</div>',
-        'before_title' => '<h2>',
-        'after_title' => '</h2>'
-    ));
-    register_sidebar(array(
-        'name' => '文章页侧栏',
-        'id' => ' ',
-        'before_widget' => '<div class="widget %2$s">',
-        'after_widget' => '</div>',
-        'before_title' => '<h2>',
-        'after_title' => '</h2>'
-    ));
-    register_sidebar(array(
-        'name' => '页面侧栏',
-        'id' => 'widget_pagesidebar',
-        'before_widget' => '<div class="widget %2$s">',
-        'after_widget' => '</div>',
-        'before_title' => '<h2>',
-        'after_title' => '</h2>'
-    ));
-}
 
 //面包屑导航
-function deel_breadcrumbs()
+function mtx_breadcrumbs()
 {
     if (!is_single() || get_post_type() != 'post') {
         return false;
@@ -142,6 +106,7 @@ function deel_breadcrumbs()
     return '<a title="返回首页" href="' . home_url() . '"><i class="fa fa-home"></i></a> <small>></small> ' . get_category_parents($category->term_id, true, ' <small>></small> ') . '<span class="muted">' . get_the_title() . '</span>';
 }
 
+//无用
 function _moloader($name = '', $apply = true)
 {
     if (!function_exists($name)) {
@@ -153,63 +118,32 @@ function _moloader($name = '', $apply = true)
     }
 }
 
-// 取消原有jQuery，加载自定义jQuery
-function footerScript()
+function mtx_script()
 {
-
     if (!is_admin()) {
-        $purl = get_stylesheet_directory_uri();
-
-
         wp_deregister_script('jquery');
-/*         if (_mtx('jqcdn_source') == '1') {
-            //wp_register_script('jquery', 'https://cdn.jsdelivr.net/gh/yunluo/GitCafeApi/js/jquery-1.8.3.min.js', false, '1.0', true); //底部加载,速度快,兼容差
-            //实验性使用Jquery1.9
-            wp_register_script('jquery', 'https://cdn.jsdelivr.net/gh/jquery/jquery@1.9.1/jquery.min.js', false, '1.0', true);
-        } else {
-            wp_register_script('jquery', MTX_URL . '/dist/js/jquery.min.js', false, '1.0', false); //头部加载,速度慢,兼容好
-        } */
-        /* wp_enqueue_script('jquery');  */
-
         wp_register_style('style', MTX_URL . '/dist/css/main.css', false, '1.0');
         wp_enqueue_style('style');
+
         //使用requirejs管理
         wp_register_script('requirejs', 'https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js', array(), MTX_VER, true);
 
+        //蛋疼
         if (_mtx('jqcdn_source') == '1') {
             wp_register_script('jquery', MTX_URL . '/dist/js/main.js', array('requirejs'), MTX_VER, true);
         } else {
             wp_register_script('jquery', MTX_URL . '/dist/js/main.js', array('requirejs'), MTX_VER, true);
         }
-
-        //有bug啊
         wp_enqueue_script('requirejs');
         wp_enqueue_script('jquery');
     }
 }
+add_action('wp_enqueue_scripts', 'mtx_script');
 
-add_action('wp_enqueue_scripts', 'footerScript');
-function _cssloader($arr)
-{
-    foreach ($arr as $key => $item) {
-        $href = $item;
-        if (strstr($href, '//') === false) {
-            $href = get_stylesheet_directory_uri() . '/dist/css/' . $item . '.css';
-        }
-        wp_enqueue_style('_' . $key, $href, array(), MTX_VER, 'all');
-    }
-}
-function _jsloader($arr)
-{
-    foreach ($arr as $item) {
-        wp_enqueue_script('_' . $item, get_stylesheet_directory_uri() . '/dist/js/' . $item . '.js', array(), '1.0', true);
-    }
-}
 
-if (!function_exists('deel_paging')) {
-    function deel_paging()
+if (!function_exists('mtx_paging')) {
+    function mtx_paging()
     {
-
         //分页前广告
         if (_mtx('feed_ad')) {
             echo '<article class="excerpt">' . _mtx('feed_ad') . '</article>';
@@ -220,9 +154,10 @@ if (!function_exists('deel_paging')) {
         }
         global $wp_query, $paged;
         $max_page = $wp_query->max_num_pages;
-        if ($max_page == 1 || $paged == 0) {
+        if ($max_page == 1 ) {
             return;
         }
+        
         echo '<div class="pagination"><ul>';
         if (empty($paged)) {
             $paged = 1;
@@ -252,11 +187,11 @@ if (!function_exists('deel_paging')) {
         // echo '<li><span>共 '.$max_page.' 页</span></li>';
         echo '</ul></div>';
 
-        echo '<div class="pagination-bottom">
-        
+        if (_mtx('ajaxpager')) {
+            echo '<div class="pagination-bottom">
         <div class="pagination-loading"><i class="fa fa-spinner fa-spin"></i> 数据载入中...</div>
         </div>';
-        echo '';
+        }
     }
 
     function p_link($i, $title = '')
@@ -297,6 +232,8 @@ if (!function_exists('deel_views')) {
         return $views . $after;
     }
 }
+
+
 //页面伪静态
 if (_mtx('pagehtml_enable')) {
     function html_page_permalink()
@@ -308,7 +245,6 @@ if (_mtx('pagehtml_enable')) {
     }
 
     add_action('init', 'html_page_permalink', -1);
-
     function git_search_url_rewrite()
     {
         if (is_search() && !empty($_GET['s']) && !is_admin()) {
@@ -316,7 +252,6 @@ if (_mtx('pagehtml_enable')) {
             exit();
         }
     }
-
     add_action('template_redirect', 'git_search_url_rewrite');
 }
 
@@ -415,13 +350,14 @@ function deel_smilies_src($img_src, $img, $siteurl)
 }
 
 add_filter('smilies_src', 'deel_smilies_src', 1, 10);
-//自动勾选
+
+//评论框自动勾选
 function deel_add_checkbox()
 {
     echo '<label for="comment_mail_notify" class="checkbox inline" style="padding-top:0;"><input name="comment_mail_notify" id="comment_mail_notify" value="comment_mail_notify" checked="checked" type="checkbox">评论通知</label>';
 }
-
 add_action('comment_form', 'deel_add_checkbox');
+
 //时间显示方式‘xx以前’
 function time_ago($type = 'commennt', $day = 7)
 {
@@ -454,7 +390,7 @@ function timeago($ptime)
 }
 
 //评论样式
-function deel_comment_list($comment, $args, $depth)
+function mtx_comment_list($comment, $args, $depth)
 {
     echo '<li ';
     comment_class();
@@ -500,69 +436,6 @@ function deel_comment_list($comment, $args, $depth)
     echo '</div></div>';
 }
 
-
-//过滤外文评论
-if (_mtx('spam_lang')) {
-    function refused_spam_comments($commentdata)
-    {
-        if (is_user_logged_in()) {
-            return $commentdata;
-        }
-        $pattern = '/[一-龥]/u';
-        $jpattern = '/[ぁ-ん]+|[ァ-ヴ]+/u';
-        if (!preg_match($pattern, $commentdata['comment_content'])) {
-            git_err('写点汉字吧，博主外语很捉急！You should type some Chinese word!');
-        }
-        if (preg_match($jpattern, $commentdata['comment_content'])) {
-            git_err('日文滚粗！Japanese Get out！日本语出て行け！ You should type some Chinese word！');
-        }
-        return $commentdata;
-    }
-
-    add_filter('preprocess_comment', 'refused_spam_comments');
-}
-//屏蔽关键词，email，url，ip
-if (_mtx('spam_keywords')) {
-    function Googlofuckspam($commentdata)
-    {
-        if (is_user_logged_in()) {
-            return $commentdata;
-        }
-        if (wp_blacklist_check($commentdata['comment_author'], $commentdata['comment_author_email'], $commentdata['comment_author_url'], $commentdata['comment_content'], $commentdata['comment_author_IP'], $commentdata['comment_agent'])) {
-            header("Content-type: text/html; charset=utf-8");
-            git_err('不好意思，您的评论违反本站评论规则');
-        } else {
-            return $commentdata;
-        }
-    }
-
-    add_filter('preprocess_comment', 'Googlofuckspam');
-}
-//屏蔽长连接评论
-if (_mtx('spam_long') && !is_user_logged_in()) {
-    function lang_url_spamcheck($approved, $commentdata)
-    {
-        return strlen($commentdata['comment_author_url']) > 50 ? 'spam' : $approved;
-    }
-
-    add_filter('pre_comment_approved', 'lang_url_spamcheck', 99, 2);
-}
-//屏蔽昵称，评论内容带链接的评论
-if (_mtx('spam_url')) {
-    function Googlolink($commentdata)
-    {
-        if (is_user_logged_in()) {
-            return $commentdata;
-        }
-        $links = '/http:\\/\\/|https:\\/\\/|www\\./u';
-        if (preg_match($links, $commentdata['comment_author']) || preg_match($links, $commentdata['comment_content'])) {
-            git_err('在昵称和评论里面是不准发链接滴.');
-        }
-        return $commentdata;
-    }
-
-    add_filter('preprocess_comment', 'Googlolink');
-}
 //点赞
 add_action('wp_ajax_nopriv_bigfa_like', 'bigfa_like');
 add_action('wp_ajax_bigfa_like', 'bigfa_like');
@@ -586,43 +459,6 @@ function bigfa_like()
     die;
 }
 
-
-//下面的这些都准备滚蛋,WeAuth和Payjs我都不用,Payjs收费300死马啊
-
-//weauth自动登录
-function bind_email_check()
-{
-    $mail = isset($_POST['email']) ? $_POST['email'] : false;
-    if ($mail && $_POST['action'] == 'bind_email_check') {
-        $user_id = email_exists($email);
-        if ($user_id) {
-            exit(1);
-        }
-    }
-}
-
-add_action('wp_ajax_bind_email_check', 'bind_email_check');
-add_action('wp_ajax_nopriv_bind_email_check', 'bind_email_check');
-
-//weauth自动登录
-function weauth_oauth_login()
-{
-    $key = isset($_POST['spam']) ? $_POST['spam'] : false;
-    $mail = isset($_POST['email']) ? $_POST['email'] : false;
-    if ($key && $_POST['action'] == 'weauth_oauth_login') {
-        $user_id = get_transient($key . 'ok');
-        if ($user_id != 0) {
-            wp_set_auth_cookie($user_id, true);
-            if ($mail && !empty($mail) && is_email($mail)) {
-                wp_update_user(array('ID' => $user_id, 'user_email' => $mail));
-            }
-            exit(wp_unique_id());
-        }
-    }
-}
-
-add_action('wp_ajax_weauth_oauth_login', 'weauth_oauth_login');
-add_action('wp_ajax_nopriv_weauth_oauth_login', 'weauth_oauth_login');
 
 //付费可见
 function pay_buy()
@@ -826,34 +662,25 @@ function payrest()
 add_action('wp_ajax_payrest', 'payrest');
 add_action('wp_ajax_nopriv_payrest', 'payrest');
 
-//ajax生成登录二维码
-function weauth_qr_gen()
+//临时禁止后台登录,因为验证码功能在前台
+function prevent_wp_login()
 {
-    if (isset($_POST['wastart']) && $_POST['action'] == 'weauth_qr_gen') {
-        if (!empty($_POST['wastart'])) {
-            $rest = implode("|", get_weauth_qr());
-            exit($rest);
-        }
+    // WP tracks the current page - global the variable to access it
+    global $pagenow;
+    // Check if a $_GET['action'] is set, and if so, load it into $action variable
+    $action = (isset($_GET['action'])) ? $_GET['action'] : '';
+    // Check if we're on the login page, and ensure the action is not 'logout'
+    if ($pagenow == 'wp-login.php' && (!$action || ($action && !in_array($action, array('logout', 'lostpassword', 'rp', 'resetpass'))))) {
+        // Load the home page url
+        $page = get_bloginfo('url');
+        // Redirect to the home page
+        wp_redirect($page);
+        // Stop execution to prevent the page loading for any reason
+        exit();
     }
 }
+add_action('init', 'prevent_wp_login');
 
-add_action('wp_ajax_weauth_qr_gen', 'weauth_qr_gen');
-add_action('wp_ajax_nopriv_weauth_qr_gen', 'weauth_qr_gen');
-
-//检查登录状况
-function weauth_check()
-{
-    if (isset($_POST['sk']) && $_POST['action'] == 'weauth_check') {
-        $rest = substr($_POST['sk'], -16); //key
-        $weauth_cache = get_transient($rest . 'ok');
-        if (!empty($weauth_cache)) {
-            exit($rest); //key
-        }
-    }
-}
-
-add_action('wp_ajax_weauth_check', 'weauth_check');
-add_action('wp_ajax_nopriv_weauth_check', 'weauth_check');
 
 //最热排行
 function hot_posts_list()
@@ -1060,7 +887,6 @@ function fancybox($content)
     $content = preg_replace($pattern, $replacement, $content);
     return $content;
 }
-
 add_filter('the_content', 'fancybox');
 
 //输出WordPress表情
@@ -1074,8 +900,8 @@ function fa_get_wpsmiliestrans()
     }
     return $output;
 }
-
 add_action('media_buttons_context', 'fa_smilies_custom_button');
+
 function fa_smilies_custom_button($context)
 {
     $context = '';
@@ -1167,15 +993,16 @@ function Bing_category()
     add_filter('comment_excerpt', 'git_comment_display', '', 1);
 }
  */
+
 //中文文件重命名
-function git_upload_filter($file)
+function mtx_upload_filter($file)
 {
     $time = date("YmdHis");
     $file['name'] = $time . "" . mt_rand(1, 100) . "." . pathinfo($file['name'], PATHINFO_EXTENSION);
     return $file;
 }
 
-add_filter('wp_handle_upload_prefilter', 'git_upload_filter');
+add_filter('wp_handle_upload_prefilter', 'mtx_upload_filter');
 
 
 //UA信息
@@ -1305,6 +1132,7 @@ if (_mtx('html_compress')) {
 
     add_filter('the_content', 'git_unCompress');
 }
+
 //增强编辑器开始
 function git_editor_buttons($buttons)
 {
@@ -1313,8 +1141,8 @@ function git_editor_buttons($buttons)
     $buttons[] = 'backcolor';
     return $buttons;
 }
-
 add_filter('mce_buttons_3', 'git_editor_buttons');
+
 //获取访客VIP样式
 if (_mtx('git_vip')) :
     function get_author_class($comment_author_email, $user_id)
@@ -1345,8 +1173,9 @@ function git_comment_add_at($comment_text, $comment = '')
     }
     return $comment_text;
 }
-
 add_filter('get_comment_text', 'git_comment_add_at', 20, 2);
+
+
 //导航单页函数
 function get_the_link_items($id = null)
 {
@@ -1454,8 +1283,8 @@ function git_comment_author($query_vars)
     }
     return $query_vars;
 }
-
 add_filter('request', 'git_comment_author');
+
 
 function git_comment_author_link($link, $author_id, $author_nicename)
 {
@@ -1465,8 +1294,8 @@ function git_comment_author_link($link, $author_id, $author_nicename)
     }
     return $link;
 }
-
 add_filter('author_link', 'git_comment_author_link', 10, 3);
+
 
 //生成订单号编码
 function git_order_id()
@@ -1491,7 +1320,6 @@ if (_mtx('lazyload')) {
         }
         return $content;
     }
-
     add_filter('the_content', 'lazyload');
 }
 
@@ -1757,9 +1585,6 @@ function _title()
 
     return $html;
 }
-
-
-
 
 
 ?>

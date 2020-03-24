@@ -1,17 +1,17 @@
 </section>
 <?php
 if (_mtx('superfoot_enable') && !mtx_is_mobile()) { ?>
-  <div id="footbar" style="border-top: 2px solid #8E44AD;">
+  <div id="footbar">
     <ul>
       <li>
         <p class="first"><?php echo _mtx('superfoot_1_title'); ?></p><span><?php echo _mtx('superfoot_1_content'); ?></span>
-      </li>
+      
       <li>
         <p class="second"><?php echo _mtx('superfoot_2_title'); ?></p><span><?php echo _mtx('superfoot_2_content'); ?></span>
-      </li>
+      
       <li>
         <p class="third"><?php echo _mtx('superfoot_3_title'); ?></p><span><?php echo _mtx('superfoot_3_content'); ?></span>
-      </li>
+      
       <li>
         <p class="fourth"><?php echo _mtx('superfoot_4_title'); ?></p><span><?php echo _mtx('superfoot_4_content'); ?></span>
       </li>
@@ -35,12 +35,11 @@ if (_mtx('superfoot_enable') && !mtx_is_mobile()) { ?>
 </footer>
 <?php
 if (_mtx('copydialog_enable') && is_singular()) {
-  echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>';
-  echo '<script>document.body.oncopy = function() { Swal.fire(
+/*   echo '<script>document.body.oncopy = function() { Swal.fire(
   \'复制成功\',
   \'转载原创文章务必保留原文链接,谢谢你!\',
   \'success\'
-)};</script>';
+)};</script>'; */
 } ?>
 <?php
 if (_mtx('git_copy_b') && is_singular()) {
@@ -52,40 +51,37 @@ if (_mtx('footer_code')) {
   echo _mtx('footer_code');
 }
 
-_moloader('mo_get_user_rp');
 ?>
 
 <?php
 
-$roll ='';
+$roll = '';
 
-if(_mtx('sideroll_enable')){
+if (_mtx('sideroll_enable')) {
 
-  $roll=_mtx('sideroll_index');
+  $roll = _mtx('sideroll_index');
 }
-if( $roll ){
+if ($roll) {
   $roll = json_encode(explode(' ', $roll));
-}else{
+} else {
   $roll = json_encode(array());
 }
 
-
+//这写的也太蛋疼了,还不如不结合Jquery，直接用自带的呢
 ?>
+
 <script>
-  window._deel = {
-    name: '<?php bloginfo('name') ?>',
+  window.Mtx = {
+    name: '<?php echo bloginfo('name') ?>',
     url: '<?php echo MTX_URL ?>',
     ajaxpager: '<?php echo _mtx('ajaxpager') ?>',
-    commenton: 1,
-    roll: <?php echo $roll?>
-  };
-
-  window.jsui = {
-    www: '<?php echo home_url() ?>',
-    uri: '<?php echo get_stylesheet_directory_uri(); ?>',
-    cdn: '<?php echo getCDNURI(); ?>',
-    url_rp: '<?php echo mo_get_user_rp() ?>'
-  };
+    roll: '<?php echo $roll ?>',
+    cdn: '<?php echo _mtx('cdn_enable') ? str_replace(home_url(), _mtx('cdn_url'), get_stylesheet_directory_uri()) : '' ?>',
+    url_resetpassword: '<?php echo _mtx('user_rp') ? get_permalink(_mtx('user_rp')) : '' ?>',
+    ajax_url: '<?php echo admin_url('admin-ajax.php')?>',
+    order : '<?php echo get_option('comment_order')?>',
+    formpostion : 'bottom'
+  }
 </script>
 <?php
 wp_footer();

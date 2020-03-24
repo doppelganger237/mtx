@@ -1,8 +1,5 @@
 <?php 
-/**
- * [mo_get_user_page description]
- * @return [type] [description]
- */
+
 function mo_get_user_rp(){
 	$pid = _mtx('user_rp');
 
@@ -10,7 +7,7 @@ function mo_get_user_rp(){
 		return false;
 	}
 
-	if( get_permalink($pid) ){
+	if(get_permalink($pid) ){
 		return get_permalink($pid);
 	}
 

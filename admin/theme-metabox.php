@@ -50,22 +50,6 @@ if (!class_exists('myCustomFields')) {
                 "capability"    => "edit_posts"
             ),
             array(
-                "name"          => "download_name",
-                "title"         => "单页下载文件名字",
-                "description"   => "这里可以输入您的下载文件的名字",
-                "type"          =>   "text",
-                "scope"         =>   array("post"),
-                "capability"    => "edit_posts"
-            ),
-            array(
-                "name"          => "download_size",
-                "title"         => "单页下载文件大小",
-                "description"   => "这里可以输入您的下载文件的大小，可以加上单位，比如：233KB或者233MB",
-                "type"          =>   "text",
-                "scope"         =>   array("post"),
-                "capability"    => "edit_posts"
-            ),
-            array(
                 "name"          => "download_login",
                 "title"         => "登录下载",
                 "description"   => "选中后用户登录才可以下载",
@@ -75,7 +59,7 @@ if (!class_exists('myCustomFields')) {
             ),
             array(
                 "name"          => "download_link",
-                "title"         => "单页下载下载链接【新版】",
+                "title"         => "下载链接",
                 "description"   => "按照链接,名字,备注的格式,注意中间是用英文逗号,换行可添加多个,举个栗子：<code>https://www.baidu.com,百度官网,中国最大的搜索引擎网站</code>",
                 "type"          =>   "textarea",
                 "scope"         =>   array("post"),

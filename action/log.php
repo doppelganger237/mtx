@@ -21,7 +21,17 @@ if( !$ui['action'] ){
 
 // print_r($ui);
 
+session_start();
+$captcha = ( isset($_POST['captcha']) ) ? trim($_POST['captcha']) : null;
+if(strtolower($_SESSION["captcha"]) == strtolower($captcha)){
+        $_SESSION["captcha"] = "";
+}else{
+	print_r(json_encode(array('error'=>1, 'msg'=>'验证码错误')));  
+	exit();
+}
+
 switch ($ui['action']) {
+    
     case 'signin':
         if( is_user_logged_in() ) {
             print_r(json_encode(array('error'=>1, 'msg'=>'你已经登录')));
@@ -73,17 +83,17 @@ switch ($ui['action']) {
         }
 
         //支持中文
-   /*      if( !preg_match('/^[a-zA-Z\d_]{3,20}$/i', $ui['name']) ) {  
+         if( !preg_match('/^[a-zA-Z\d_]{3,20}$/i', $ui['name']) ) {  
             print_r(json_encode(array('error'=>1, 'msg'=>'昵称是以字母数字下划线组合的3-20位字符')));  
             exit();  
-        }  */
+        }  
 
         if ( !filter_var($ui['email'], FILTER_VALIDATE_EMAIL) ){ 
             print_r(json_encode(array('error'=>1, 'msg'=>'邮箱格式错误')));  
             exit();  
         }
 
-        /*if( sstrlen($ui['password'])<6 ) {  
+        if( sstrlen($ui['password'])<6 ) {  
             print_r(json_encode(array('error'=>1, 'msg'=>'密码太短')));  
             exit();
         }

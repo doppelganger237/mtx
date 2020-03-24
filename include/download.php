@@ -4,7 +4,7 @@ class DownloadFront
 {
 
 
-  public static $meta_fields = array('download_name', 'download_size', 'download_link','download_login');
+  public static $meta_fields = array('download_name', 'download_size', 'download_link', 'download_login');
 
 
   public function __construct()

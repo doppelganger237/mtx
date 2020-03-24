@@ -105,7 +105,7 @@ if ( have_comments() ) {
 		<i class="fa fa-comments-o"></i> <b><?php echo ' '.$count_t.' '; ?>个小伙伴吐槽过</b>
 	</div>
 	<ol class="commentlist">
-		<?php wp_list_comments('type=comment&callback=deel_comment_list') ?>
+		<?php wp_list_comments('type=comment&callback=mtx_comment_list') ?>
 	</ol>
 	<div class="commentnav"	>
 		<?php paginate_comments_links('prev_text=«&next_text=»');?>

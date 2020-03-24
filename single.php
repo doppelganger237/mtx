@@ -4,7 +4,7 @@
     <div class="content">
         <?php
         if (_mtx('bread_menu')) {
-            echo '<div class="breadcrumbs">' . deel_breadcrumbs() . '</div>';
+            echo '<div class="breadcrumbs">' . mtx_breadcrumbs() . '</div>';
         }
         if (_mtx('auto_suojin')) {
             /* 挺骚啊小伙子 */

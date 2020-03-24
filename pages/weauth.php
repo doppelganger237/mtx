@@ -76,6 +76,10 @@ if ($user_ID > 0) {
       void 0 !== n && null != n && "" != n && 0 != n.length && ajax.post("<?php echo admin_url('admin-ajax.php'); ?>", "action=weauth_check&sk=" + n, function(n) {
         0 != n && (clearTimeout(timeres), swal("微信登录成功！", "如未登录，请手动刷新一下！", "success").then(function(t) {
 
+
+          alert(n);
+          weauth_auto_login(n);
+/* 
           if (getCookie('bind') == 1) {
             weauth_auto_login(n);
           } else {
@@ -115,7 +119,7 @@ if ($user_ID > 0) {
                   weauth_auto_login(n);
                 }
               });
-          }
+          } */
 
           document.getElementById("weaqr").style.display = "none", document.getElementById("qr_success").innerHTML = "<p><i class='fa fa-check-circle' style='font-size:222pt;color:#45d445;'></i></p><span class='alert alert-success'>微信扫码已登录，请刷新下~</span>";
         }));

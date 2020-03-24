@@ -97,11 +97,12 @@ function optionsframework_options()
 	$imagepath =  get_template_directory_uri() . '/images/';
 
 	$options = array();
-//做锤子I18N
+
 	$options[] = array(
 		'name' => __('常规选项', 'mtx'),
 		'type' => 'heading'
 	);
+
 	$options[] = array(
 		'name' => __('开启滚动栏', 'mtx'),
 		'id' => 'speedbar_enabled',
@@ -119,14 +120,6 @@ function optionsframework_options()
 <li>延续了Git的滚动信息框</li>',
 		
 	);
-
-	$options[] = array(
-		'name' => '找回密码页面',
-		'desc' => '输入找回密码页面的ID',
-		'id' => 'user_rp',
-		'options' => $options_pages,
-		'type' => 'select'
-	);
 	$options[] = array(
 		'name' => '列表Ajax下拉加载',
 		'desc' => '开启本选项之后网站会采用ajax方式下拉自动加载,因为Card模式暂时关闭,所以只在博客模式有效果',
@@ -136,7 +129,16 @@ function optionsframework_options()
 	);
 
 	$options[] = array(
-		'name' => '关闭Feed',
+		'name' => '找回密码页面',
+		'desc' => '输入找回密码页面的ID',
+		'id' => 'user_rp',
+		'options' => $options_pages,
+		'type' => 'select'
+	);
+
+
+	$options[] = array(
+		'name' => '关闭WordPress的Feed页面',
 		'desc' => '没任何用的功能',
 		'id' => 'feed_disable',
 		'type' => 'checkbox',
@@ -216,18 +218,20 @@ function optionsframework_options()
 	);
 
 	$options[] = array(
-		'name' => '自动内链',
-		'desc' => '启用',
-		'id' => 'autolink',
-		'type' => 'checkbox'
-	);
-	$options[] = array(
 		'name' => '链接去掉Categroy',
 		'desc' => '启用  【开启后，需要至设置——固定连接——重新保存一下，否则会发生404错误】',
 		'id' => 'categroy_b',
 		'type' => 'checkbox',
 		'std'	=> true
 	);
+
+	$options[] = array(
+		'name' => '自动内链',
+		'desc' => '启用',
+		'id' => 'autolink',
+		'type' => 'checkbox'
+	);
+
 	$options[] =array(
 		'name' => '关键词出现数目',
 		'desc' => '文章中少于这个数字的关键词将不自动内链，默认是1，即全部链接',
@@ -332,30 +336,8 @@ function optionsframework_options()
 		'std'	=> false
 	);
 
-	$options[] = array(
-		'name' => '过滤外语评论',
-		'desc' => '开启 【启用后，将屏蔽所有含有日文以及英语的评论，外贸站慎用】',
-		'id' => 'spam_lang',
-		'type' => 'checkbox'
-	);
-	$options[] = array(
-		'name' => '关键词，IP，邮箱屏蔽',
-		'desc' => '开启 【启用后，在WordPress-设置-讨论-黑名单中添加想要屏蔽的关键词，邮箱，网址，IP地址，每行一个】<a class="button-primary" target="_blank" href="https://img.alicdn.com/imgextra/i4/1597576229/TB2FnxnlpXXXXcDXXXXXXXXXXXX_!!1597576229.png">如图设置</a>',
-		'id' => 'spam_keywords',
-		'type' => 'checkbox'
-	);
-	$options[] = array(
-		'name' => '屏蔽含有链接的评论',
-		'desc' => '开启 【启用后，屏蔽内容或者评论昵称含有链接的评论，如果您的评论需要输入链接或者图片的话，请慎选！！！】',
-		'id' => 'spam_url',
-		'type' => 'checkbox'
-	);
-	$options[] = array(
-		'name' => '屏蔽长链接评论',
-		'desc' => '开启 【启用后，屏蔽含有过长网址(超过50个字符)的评论，当然如果你已经选择了上面的选项的话，就不用选择了】',
-		'id' => 'spam_long',
-		'type' => 'checkbox'
-	);
+
+
 	$options[] = array(
 		'title' => '评论设置属性',
 		'type' => 'title'
@@ -915,19 +897,19 @@ $options[] =array(
 	'type' => 'checkbox'
 );
 
-/* $options[] =array(
+ $options[] =array(
 	'name' => '是否启用微信扫码登录',
 	'desc' => '启用 【开启后，新建微信登录页面即可，另外需要HTTPS】',
 	'id' => 'weauth_oauth',
 	'type' => 'checkbox'
 );
-$options[] =array(
+/* $options[] =array(
 	'name' => '是否启用强制微信登录',
 	'desc' => '启用 【开启后，将禁用WordPress自带的登录，所有登录地址都跳转到微信的登录，如需临时使用自带登录，可以使用这个链接：你的域名/wp-login.php?loggedout=true】',
 	'id' => 'weauth_oauth_force',
 	'type' => 'checkbox'
 );
- */
+  */
 $options[] = array(
 	'name' => 'CDN开启',
 	'desc' => '',

@@ -68,4 +68,4 @@ wp_reset_query(); ?>
 </div>
 </div>
 <?php
-deel_paging(); ?>
+mtx_paging(); ?>

@@ -99,6 +99,5 @@ wp_reset_query(); ?>
 
 
 <?php
-//广告,伪代码
 
-deel_paging(); ?>
+mtx_paging(); ?>
